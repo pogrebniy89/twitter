@@ -128,6 +128,7 @@ class Twitter {
             })
             this.showAllPost();
             this.handlerModal.closeModal();
+            textElem.innerHTML = tempString;
         })
 
         textElem.addEventListener('click', () => {
