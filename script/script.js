@@ -7,22 +7,21 @@ class FetchData {
         }
 
         return res.json();
-    }
-
-    getPost = () => this.getResource('db/dataBase.json');
+    };
+    getPost = async () => await this.getResource('db/dataBase.json');
 }
 
 
 class Twitter {
     constructor({listElem}) {
         const fetchData = new FetchData();
-        this.tweets = new Posts({});
+        this.tweets = new Posts();
         this.elements = {
             listElem: document.querySelector(listElem)
-        }
+        };
         fetchData.getPost()
             .then(data => {
-                data.forEach(this.tweets.addPost)
+                data.forEach(this.tweets.addPost);
                 this.showAllPost()
             });
         console.log(this.tweets, 'this.tweets');
@@ -30,7 +29,7 @@ class Twitter {
 
     renderPosts(tweets) {
         this.elements.listElem.textContent = '';
-        tweets.forEach(({id, userName, nickname, postData, text, img, likes}) => {
+        tweets.forEach(({id, userName, nickname, getDate, text, img, likes}) => {
             this.elements.listElem.insertAdjacentHTML('beforeend', `
                 <li>
                     <article class="tweet">
@@ -40,9 +39,9 @@ class Twitter {
                             <header class="tweet__header">
                                 <h3 class="tweet-author">${userName}
                                     <span class="tweet-author__add tweet-author__nickname">@${nickname}</span>
-                                    <time class="tweet-author__add tweet__date">${postData}</time>
+                                    <time class="tweet-author__add tweet__date">${getDate()}</time>
                                 </h3>
-                                <button class="tweet__delete-button chest-icon data-id'${id}'"></button>
+                                <button class="tweet__delete-button chest-icon" data-id="${id}"></button>
                             </header>
                             <div class="tweet-post">
                                 <p class="tweet-post__text">${text}</p>
@@ -87,8 +86,8 @@ class Posts {
     }
 
     addPost = (tweets) => {
-        this.posts.push(new Posts(tweets));
-    }
+        this.posts.push(new Post(tweets));
+    };
 
     deletePost(id) {
 
@@ -101,7 +100,7 @@ class Posts {
 
 class Post {
     constructor({id, userName, nickname, postData, text, img, likes = 0}) {
-        this.id = id ? id : this.generateID();
+        this.id = id || this.generateID();
         this.userName = userName;
         this.nickname = nickname;
         this.postData = postData ? new Date(postData) : new Date();
@@ -112,19 +111,19 @@ class Post {
     }
 
     changeLike() {
-        this.like = !this.likes;
+        this.like = !this.liked;
         if (this.liked) {
-            this.liked++;
+            this.likes++;
         } else {
             this.likes--;
         }
     }
 
     generateID() {
-        return Math.random().toString(32).substring(2, 9) + (+new Data).toString(32);
+        return Math.random().toString(32).substring(2, 9) + (+new Date).toString(32);
     }
 
-    getDate() {
+    getDate = () => {
 
         const options = {
             year: 'numeric',
@@ -132,7 +131,7 @@ class Post {
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-        }
+        };
 
         return this.postData.toLocaleString('ru-Ru', options);
     }
